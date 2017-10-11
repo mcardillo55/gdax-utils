@@ -1,9 +1,12 @@
 import datetime
 import time
 import gdax
+import config
 
 
 class OrderBookCustom(gdax.OrderBook):
+    def __init__(self):
+        super(OrderBookCustom, self).__init__(product_id=config.PRODUCT)
     def is_ready(self):
         try:
             super(OrderBookCustom, self).get_ask()

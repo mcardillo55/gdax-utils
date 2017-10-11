@@ -16,7 +16,7 @@ def place_sell(partial='1.0'):
         print("Placing sell... Price: %.2f Size: %.8f" % (ask, amount))
         return auth_client.sell(type='limit', size=str(amount),
                                 price=str(ask), post_only=True,
-                                product_id='BTC-USD')
+                                product_id=config.PRODUCT)
     else:
         ret = {'status': 'done'}
         return ret
@@ -44,7 +44,7 @@ def sell(amount=None):
                 ret = auth_client.get_order(ret.get('id'))
             btc = get_btc(auth_client)
         if ret.get('id'):
-            auth_client.cancel_all(product_id='BTC-USD')
+            auth_client.cancel_all(product_id=config.PRODUCT)
         btc = get_btc(auth_client)
     except Exception as e:
         print(datetime.datetime.now(), e)

@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_DOWN
+import config
 
 
 def get_usd(auth_client):
@@ -13,7 +14,7 @@ def get_usd(auth_client):
 def get_btc(auth_client):
     try:
         for account in auth_client.get_accounts():
-            if account.get('currency') == 'BTC':
+            if account.get('currency') == config.PRODUCT[:3]:
                 return round_btc(account.get('available'))
         return round_btc(auth_client.get_accounts()[0]['available'])
     except AttributeError:

@@ -8,7 +8,6 @@ class OrderBookCustom(gdax.OrderBook):
         try:
             super(OrderBookCustom, self).get_ask()
         except ValueError as e:
-            print(datetime.datetime.now(), e)
             return False
         return True
 

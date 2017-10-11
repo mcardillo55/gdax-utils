@@ -13,6 +13,7 @@ def place_sell(partial='1.0'):
     ask = order_book.get_bid() + Decimal('0.01')
 
     if amount >= Decimal('0.01'):
+        print("Placing sell... Price: %.2f Size: %.8f" % (ask, amount))
         return auth_client.sell(type='limit', size=str(amount),
                                 price=str(ask), post_only=True,
                                 product_id='BTC-USD')
@@ -25,8 +26,9 @@ def sell(amount=None):
     try:
         ret = place_sell('0.5')
         ask = ret.get('price')
-        while ret.get('status') != 'done':
-            if ret.get('status') == 'rejected' or ret.get('message') == 'NotFound':
+        btc = get_btc(auth_client)
+        while btc >= Decimal('0.01') or len(auth_client.get_orders()[0]) > 0:
+            if ret.get('status') == 'rejected' or ret.get('status') == 'done' or ret.get('message') == 'NotFound':
                 ret = place_sell('0.5')
                 ask = ret.get('price')
             elif not ask or Decimal(ask) > order_book.get_bid() + Decimal('0.01'):
@@ -52,8 +54,10 @@ def sell(amount=None):
 order_book = OrderBookCustom()
 order_book.start()
 auth_client = gdax.AuthenticatedClient(config.KEY, config.SECRET, config.PASSPHRASE)
+print("Initializing Order Book...")
 
 sell()
 
 # Cleanup
+print("Sale complete!")
 order_book.close()

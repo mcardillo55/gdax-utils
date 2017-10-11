@@ -6,48 +6,44 @@ import gdax
 import config
 
 
-def place_buy(partial='1.0'):
-    amount = get_usd(auth_client) * Decimal(partial)
-    bid = order_book.get_ask() - Decimal('0.01')
-    amount = round_btc(Decimal(amount) / Decimal(bid))
-
+def place_sell(partial='1.0'):
+    amount = round_btc(get_btc(auth_client) * Decimal(partial))
     if amount < Decimal('0.01'):
-        amount = get_usd(auth_client)
-        bid = order_book.get_ask() - Decimal('0.01')
-        amount = round_btc(Decimal(amount) / Decimal(bid))
+        amount = get_btc(auth_client)
+    ask = order_book.get_bid() + Decimal('0.01')
 
     if amount >= Decimal('0.01'):
-        return auth_client.buy(type='limit', size=str(amount),
-                                    price=str(bid), post_only=True,
-                                    product_id='BTC-USD')
+        return auth_client.sell(type='limit', size=str(amount),
+                                price=str(ask), post_only=True,
+                                product_id='BTC-USD')
     else:
         ret = {'status': 'done'}
         return ret
 
 
-def buy(amount=None):
+def sell(amount=None):
     try:
-        ret = place_buy('0.5')
-        bid = ret.get('price')
+        ret = place_sell('0.5')
+        ask = ret.get('price')
         while ret.get('status') != 'done':
             if ret.get('status') == 'rejected' or ret.get('message') == 'NotFound':
-                ret = place_buy('0.5')
-                bid = ret.get('price')
-            elif not bid or Decimal(bid) < order_book.get_ask() - Decimal('0.01'):
+                ret = place_sell('0.5')
+                ask = ret.get('price')
+            elif not ask or Decimal(ask) > order_book.get_bid() + Decimal('0.01'):
                 if len(auth_client.get_orders()[0]) > 0:
-                    ret = place_buy('1.0')
+                    ret = place_sell('1.0')
                 else:
-                    ret = place_buy('0.5')
+                    ret = place_sell('0.5')
                 for order in auth_client.get_orders()[0]:
                     if order.get('id') != ret.get('id'):
                         auth_client.cancel_order(order.get('id'))
-                bid = ret.get('price')
+                ask = ret.get('price')
             if ret.get('id'):
                 ret = auth_client.get_order(ret.get('id'))
-            usd = get_usd(auth_client)
+            btc = get_btc(auth_client)
         if ret.get('id'):
             auth_client.cancel_all(product_id='BTC-USD')
-        usd = get_usd(auth_client)
+        btc = get_btc(auth_client)
     except Exception as e:
         print(datetime.datetime.now(), e)
 
@@ -57,7 +53,7 @@ order_book = OrderBookCustom()
 order_book.start()
 auth_client = gdax.AuthenticatedClient(config.KEY, config.SECRET, config.PASSPHRASE)
 
-buy()
+sell()
 
 # Cleanup
 order_book.close()

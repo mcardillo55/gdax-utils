@@ -60,7 +60,10 @@ order_book.start()
 auth_client = gdax.AuthenticatedClient(config.KEY, config.SECRET, config.PASSPHRASE)
 print("Initializing Order Book...")
 
-buy()
+try:
+    buy()
+except KeyboardInterrupt:
+    pass
 
 # Cleanup
 print("Buy Complete!")

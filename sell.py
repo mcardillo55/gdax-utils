@@ -10,7 +10,7 @@ def place_sell(partial='1.0'):
     amount = round_btc(get_btc(auth_client) * Decimal(partial))
     if amount < Decimal('0.01'):
         amount = get_btc(auth_client)
-    ask = order_book.get_bid() + Decimal('0.01')
+    ask = order_book.get_bid() + Decimal('0.00001')
 
     if amount >= Decimal('0.01'):
         print("Placing sell... Price: %.2f Size: %.8f" % (ask, amount))
@@ -31,7 +31,7 @@ def sell(amount=None):
             if ret.get('status') == 'rejected' or ret.get('status') == 'done' or ret.get('message') == 'NotFound':
                 ret = place_sell('0.5')
                 ask = ret.get('price')
-            elif not ask or Decimal(ask) > order_book.get_bid() + Decimal('0.01'):
+            elif not ask or Decimal(ask) > order_book.get_bid() + Decimal('0.00001'):
                 if len(auth_client.get_orders()[0]) > 0:
                     ret = place_sell('1.0')
                 else:

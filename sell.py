@@ -59,7 +59,7 @@ print("Initializing Order Book...")
 try:
     sell()
 except KeyboardInterrupt:
-    pass
+    auth_client.cancel_all(product_id=config.PRODUCT)
 
 # Cleanup
 print("Sale complete!")

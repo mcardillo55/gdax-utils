@@ -7,13 +7,16 @@ import config
 
 
 def place_buy(partial='1.0'):
-    amount = get_usd(auth_client) * Decimal(partial)
-    bid = order_book.get_ask() - Decimal('0.01')
+    print config.PRODUCT[4:]
+    amount = get_coin(auth_client, config.PRODUCT[4:]) * Decimal(partial)
+    print amount
+    bid = order_book.get_ask() - Decimal('0.00001')
     amount = round_btc(Decimal(amount) / Decimal(bid))
+    print amount
 
     if amount < Decimal('0.01'):
-        amount = get_usd(auth_client)
-        bid = order_book.get_ask() - Decimal('0.01')
+        amount = get_coin(auth_client, config.PRODUCT[4:])
+        bid = order_book.get_ask() - Decimal('0.00001')
         amount = round_btc(Decimal(amount) / Decimal(bid))
 
     if amount >= Decimal('0.01'):

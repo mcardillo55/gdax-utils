@@ -11,10 +11,10 @@ def get_usd(auth_client):
         return round_usd('0.0')
 
 
-def get_btc(auth_client):
+def get_coin(auth_client, product='BTC'):
     try:
         for account in auth_client.get_accounts():
-            if account.get('currency') == config.PRODUCT[:3]:
+            if account.get('currency') == product:
                 return round_btc(account.get('available'))
         return round_btc(auth_client.get_accounts()[0]['available'])
     except AttributeError:

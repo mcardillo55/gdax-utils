@@ -20,7 +20,7 @@ def place_buy(partial='1.0'):
         amount = round_btc(Decimal(amount) / Decimal(bid))
 
     if amount >= Decimal('0.01'):
-        print("Placing buy... Price: %.2f Size: %.8f" % (bid, amount))
+        print("Placing buy... Price: %.8f Size: %.8f" % (bid, amount))
         return auth_client.buy(type='limit', size=str(amount),
                                     price=str(bid), post_only=True,
                                     product_id=config.PRODUCT)
